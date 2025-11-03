@@ -12,6 +12,8 @@ import ThemeToggle from './theme-toggle';
 import { Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+
 export default function TopNav() {
 	return (
 		<Menubar>
@@ -31,14 +33,15 @@ export default function TopNav() {
 			<div className="flex grow items-center justify-end gap-1">
 				<MenubarMenu>
 					<MenubarTrigger className="text-base font-normal">
-						Dashboard
+						<Link href="/dashboard">Dashboard</Link>
 					</MenubarTrigger>
-					<MenubarContent>
-						<MenubarItem>Task 1</MenubarItem>
-						<MenubarSeparator />
-						<MenubarItem>Task 2</MenubarItem>
-					</MenubarContent>
 				</MenubarMenu>
+				<SignedOut>
+					<SignInButton />
+				</SignedOut>
+				<SignedIn>
+					<UserButton />
+				</SignedIn>
 				<MenubarMenu>
 					<ThemeToggle />
 				</MenubarMenu>
