@@ -10,7 +10,9 @@ import React, {
 } from 'react';
 import { BusinessState } from '@/utils/types/business';
 import { useClerk, useUser } from '@clerk/nextjs';
-
+import { saveBusinessToDb } from '@/actions/business';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 const initialState: BusinessState = {
 	_id: '',
 	userEmail: '',
@@ -50,12 +52,14 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 
 	const { openSignIn } = useClerk();
 	const { isSignedIn } = useUser();
+	const router = useRouter();
+
 	useEffect(() => {
 		const savedBusiness = localStorage.getItem('business');
 		if (savedBusiness) {
 			setBusiness(JSON.parse(savedBusiness));
 		}
-	}, []);
+	}, [router]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -68,14 +72,28 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 		});
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		if (!isSignedIn) {
 			openSignIn();
 			return;
 		} else {
-			alert('save business');
+			try {
+				setLoading(true);
+				const savedBusiness = await saveBusinessToDb(business);
+				setBusiness(savedBusiness);
+				localStorage.removeItem('business');
+				toast.success('🎉 Business saved successfully');
+				router.push(`/dashboard/business/edit/${savedBusiness._id}`);
+			} catch (err) {
+				console.log('❌', err);
+				toast.success('❌ Failed to save business');
+			} finally {
+				setLoading(false);
+			}
+
+			setLoading(false);
 		}
 	};
 

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Divide } from 'lucide-react';
 import PreviewCard from '@/components/business/preview/preview-card';
 import { BusinessState } from '@/utils/types/business';
-
+import { Loader2Icon, Send } from 'lucide-react';
 interface InputField {
 	name: string;
 	label: string;
@@ -70,7 +70,7 @@ const inputFields: InputField[] = [
 	},
 ];
 export default function AddBusinessPage() {
-	const { business, handleChange, handleSubmit } = useBusiness();
+	const { business, handleChange, handleSubmit, loading } = useBusiness();
 
 	return (
 		<div className="flex flex-col lg:flex-row h-minus-nav">
@@ -102,7 +102,22 @@ export default function AddBusinessPage() {
 						</div>
 					);
 				})}
-				<Button onClick={handleSubmit} type="submit" className="my-5">
+				<Button
+					onClick={handleSubmit}
+					type="submit"
+					className="my-5"
+					disabled={
+						!business?.name ||
+						!business?.category ||
+						!business?.address ||
+						loading
+					}
+				>
+					{loading ? (
+						<Loader2Icon className="animate-spin mr-2" />
+					) : (
+						<Send className="mr-2" />
+					)}
 					Submit
 				</Button>
 			</div>
