@@ -22,3 +22,26 @@ export const saveBusinessToDb = async (data: BusinessState) => {
 		throw new Error(err);
 	}
 };
+
+export const getUserBusinessesFromDb = async () => {
+	try {
+		const user = await currentUser();
+		const userEmail = user?.emailAddresses[0]?.emailAddress;
+		const businesses = await Business.find({ userEmail }).sort({
+			createdAt: -1,
+		});
+		return JSON.parse(JSON.stringify(businesses));
+	} catch (err: any) {
+		throw new Error(err);
+	}
+};
+
+export const getBusinessFromDb = async (_id: string) => {
+	try {
+		await db();
+		const business = await Business.findById(_id);
+		return JSON.parse(JSON.stringify(business));
+	} catch (err: any) {
+		throw new Error(err);
+	}
+};
