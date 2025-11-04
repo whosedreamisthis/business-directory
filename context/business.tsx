@@ -1,7 +1,13 @@
 'use client';
 
 import { Bus } from 'lucide-react';
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, {
+	createContext,
+	useContext,
+	useState,
+	useEffect,
+	ReactNode,
+} from 'react';
 import { BusinessState } from '@/utils/types/business';
 
 const initialState: BusinessState = {
@@ -41,11 +47,20 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 	const [business, setBusiness] = useState<BusinessState>(initialState);
 	const [loading, setLoading] = useState<boolean>(false);
 
+	useEffect(() => {
+		const savedBusiness = localStorage.getItem('business');
+		if (savedBusiness) {
+			setBusiness(JSON.parse(savedBusiness));
+		}
+	}, []);
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 
 		setBusiness((prevBusiness: BusinessState) => {
 			const updatedBusiness = { ...prevBusiness, [name]: value };
+
+			localStorage.setItem('business', JSON.stringify(updatedBusiness));
 			return updatedBusiness;
 		});
 	};
