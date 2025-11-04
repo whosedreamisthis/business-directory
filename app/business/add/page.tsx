@@ -4,7 +4,7 @@ import { useBusiness } from '@/context/business';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Divide } from 'lucide-react';
-
+import PreviewCard from '@/components/business/preview/preview-card';
 import { BusinessState } from '@/utils/types/business';
 
 interface InputField {
@@ -74,8 +74,8 @@ export default function AddBusinessPage() {
 
 	return (
 		<div className="flex flex-col lg:flex-row h-minus-nav">
-			<div className="flex flex-col lg:w-1/2 p-4 lg:order-last lg:flex lg:justify-center lg:items-center overflow-y-auto">
-				Preview
+			<div className="flex flex-col lg:w-1/2 p-4 lg:order-last lg:flex lg:justify-center lg:items-center overflow-y-auto min-h-[354px]">
+				<PreviewCard business={business} />
 			</div>
 			<div className="flex flex-col lg:w-1/2 p-4 lg:order-first lg:flex  overflow-y-auto">
 				<h1>

@@ -9,6 +9,7 @@ import React, {
 	ReactNode,
 } from 'react';
 import { BusinessState } from '@/utils/types/business';
+import { useClerk, useUser } from '@clerk/nextjs';
 
 const initialState: BusinessState = {
 	_id: '',
@@ -47,6 +48,8 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 	const [business, setBusiness] = useState<BusinessState>(initialState);
 	const [loading, setLoading] = useState<boolean>(false);
 
+	const { openSignIn } = useClerk();
+	const { isSignedIn } = useUser();
 	useEffect(() => {
 		const savedBusiness = localStorage.getItem('business');
 		if (savedBusiness) {
@@ -67,7 +70,13 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log(business);
+
+		if (!isSignedIn) {
+			openSignIn();
+			return;
+		} else {
+			alert('save business');
+		}
 	};
 
 	return (
