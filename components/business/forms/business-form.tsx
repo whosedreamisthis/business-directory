@@ -70,7 +70,8 @@ const inputFields: InputField[] = [
 	},
 ];
 export default function BusinessForm() {
-	const { business, handleChange, handleSubmit, loading } = useBusiness();
+	const { business, handleChange, handleSubmit, loading, logoUploading } =
+		useBusiness();
 
 	return (
 		<div className="flex flex-col lg:flex-row h-minus-nav">
@@ -94,11 +95,22 @@ export default function BusinessForm() {
 								required={item.required}
 								onChange={handleChange}
 								value={
-									(business[
-										item.name as keyof BusinessState
-									] || '') as string | number
+									item.name === 'logo'
+										? ''
+										: ((business[
+												item.name as keyof BusinessState
+										  ] || '') as string | number)
 								}
+								accept={item.accept}
 							/>
+							{logoUploading && item.name === 'logo' && (
+								<div className="absolute inset-0 flex items-center justify-center bg-opacity-50 bg-background">
+									<Loader2Icon
+										className="animate-spin"
+										size={32}
+									/>
+								</div>
+							)}
 						</div>
 					);
 				})}

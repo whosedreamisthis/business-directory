@@ -17,6 +17,7 @@ import {
 } from '@/actions/business';
 import toast from 'react-hot-toast';
 import { useRouter, usePathname, useParams } from 'next/navigation';
+import { handleLogoAction } from '@/actions/cloudinary';
 
 const initialState: BusinessState = {
 	_id: '',
@@ -47,6 +48,7 @@ interface BusinessContextType {
 	businesses: BusinessState[];
 	setBusinesses: React.Dispatch<React.SetStateAction<BusinessState[]>>;
 	initialState: BusinessState;
+	logoUploading: boolean;
 }
 const BusinessContext = createContext<BusinessContextType | undefined>(
 	undefined
@@ -58,6 +60,8 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 	const [business, setBusiness] = useState<BusinessState>(initialState);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [businesses, setBusinesses] = useState<BusinessState[]>([]);
+	const [logoUploading, setLogoUploading] = useState<boolean>(false);
+
 	const { openSignIn } = useClerk();
 	const { isSignedIn } = useUser();
 	const router = useRouter();
@@ -84,14 +88,64 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 		}
 	}, [slug]);
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
+	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value, files } = e.target;
 
-		setBusiness((prevBusiness: BusinessState) => {
-			const updatedBusiness = { ...prevBusiness, [name]: value };
+		if (name === 'logo' && files && files[0]) {
+			await handleLogo(files, name);
+		} else {
+			setBusiness((prevBusiness: BusinessState) => {
+				const updatedBusiness = { ...prevBusiness, [name]: value };
 
-			localStorage.setItem('business', JSON.stringify(updatedBusiness));
-			return updatedBusiness;
+				localStorage.setItem(
+					'business',
+					JSON.stringify(updatedBusiness)
+				);
+				return updatedBusiness;
+			});
+		}
+	};
+
+	const handleLogo = async (files: FileList, name: string) => {
+		const file = files[0];
+		setLogoUploading(true);
+
+		const reader = new FileReader();
+
+		return new Promise<void>((resolve, reject) => {
+			reader.onloadend = async () => {
+				const base64Image = reader.result as string;
+
+				try {
+					const imageUrl = await handleLogoAction(base64Image);
+					if (imageUrl) {
+						setBusiness((previousBusiness) => {
+							const updatedBusiness = {
+								...previousBusiness,
+								[name]: imageUrl,
+							};
+							localStorage.setItem(
+								'business',
+								JSON.stringify(updatedBusiness)
+							);
+							return updatedBusiness;
+						});
+						resolve();
+					} else {
+						toast.error('❌ Failed to upload image');
+					}
+				} catch (err) {
+					console.log(err);
+				} finally {
+					setLogoUploading(false);
+				}
+			};
+			reader.onerror = (error) => {
+				toast.error('❌ Failed to upload image');
+				reject(error);
+			};
+
+			reader.readAsDataURL(file);
 		});
 	};
 
@@ -159,6 +213,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 				businesses,
 				setBusinesses,
 				initialState,
+				logoUploading,
 			}}
 		>
 			{children}
