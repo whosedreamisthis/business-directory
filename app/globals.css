@@ -118,3 +118,14 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+body {
+	margin: 0;
+	padding: 0;
+	/* overflow: hidden; Only use this if you want to explicitly hide the body scrollbar */
+}
+
+.h-minus-nav {
+	/* Replace 64px with the actual height of your navigation/header */
+	height: calc(100vh - 64px);
+}
