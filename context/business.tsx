@@ -16,7 +16,7 @@ import {
 	getBusinessFromDb,
 } from '@/actions/business';
 import toast from 'react-hot-toast';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useParams } from 'next/navigation';
 
 const initialState: BusinessState = {
 	_id: '',
@@ -46,6 +46,7 @@ interface BusinessContextType {
 	handleSubmit: (e: React.FormEvent) => void;
 	businesses: BusinessState[];
 	setBusinesses: React.Dispatch<React.SetStateAction<BusinessState[]>>;
+	initialState: BusinessState;
 }
 const BusinessContext = createContext<BusinessContextType | undefined>(
 	undefined
@@ -63,6 +64,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 	const pathname = usePathname();
 
 	const isDashboardPage = pathname === '/dashboard';
+	const { slug } = useParams();
 	useEffect(() => {
 		const savedBusiness = localStorage.getItem('business');
 		if (savedBusiness) {
@@ -75,6 +77,13 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 			getUserBusinesses();
 		}
 	}, [isDashboardPage]);
+
+	useEffect(() => {
+		if (typeof slug === 'string') {
+			getBusiness();
+		}
+	}, [slug]);
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 
@@ -110,6 +119,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 			setLoading(false);
 		}
 	};
+
 	const getUserBusinesses = async () => {
 		setLoading(true);
 
@@ -123,6 +133,20 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 			setLoading(false);
 		}
 	};
+
+	const getBusiness = async () => {
+		if (!slug || typeof slug !== 'string') {
+			return;
+		}
+		try {
+			const business = await getBusinessFromDb(slug.toString());
+			setBusiness(business);
+		} catch (err: any) {
+			console.log(err);
+			toast.error('❌ Failed to fetch business');
+		}
+	};
+
 	return (
 		<BusinessContext.Provider
 			value={{
@@ -134,6 +158,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 				handleSubmit,
 				businesses,
 				setBusinesses,
+				initialState,
 			}}
 		>
 			{children}
