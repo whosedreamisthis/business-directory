@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useContext, createContext, useState, ReactNode } from 'react';
+import React, {
+	useContext,
+	createContext,
+	useState,
+	useEffect,
+	ReactNode,
+} from 'react';
 import { BusinessState } from '@/utils/types/business';
 
 const intialState: BusinessState = {
@@ -41,10 +47,18 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 	const [business, setBusiness] = useState<BusinessState>(intialState);
 	const [loading, setLoading] = useState<boolean>(false);
 
+	useEffect(() => {
+		const res = localStorage.getItem('business');
+		if (res) {
+			const savedBusiness = JSON.parse(res);
+			if (savedBusiness) setBusiness(savedBusiness);
+		}
+	}, []);
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setBusiness((prevBusiness: BusinessState) => {
 			const updatedBusiness = { ...prevBusiness, [name]: value };
+			localStorage.setItem('business', JSON.stringify(updatedBusiness));
 			return updatedBusiness;
 		});
 	};

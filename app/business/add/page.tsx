@@ -38,7 +38,7 @@ const inputFields: InputField[] = [
 		type: 'tel',
 	},
 	{
-		name: 'email',
+		name: 'userEmail',
 		label: 'Email Address',
 		type: 'email',
 		required: true,
