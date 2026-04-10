@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useTheme } from './ThemeProvider';
+import { useTheme } from '../../../context/ThemeProvider';
 import { Sun, Moon } from 'lucide-react';
 import { Button } from '../../ui/button';
 

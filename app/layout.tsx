@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
-import ThemeProvider from '../components/nav/theme/ThemeProvider';
+import ThemeProvider from '../context/ThemeProvider';
 import TopNav from '../components/nav/TopNav';
 import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
+import { BusinessProvider } from '@/context/business';
 
 export const metadata: Metadata = {
 	title: 'Create Next App',
@@ -38,10 +39,12 @@ export default function RootLayout({
 					/>
 				</head>
 				<body className="bg-background text-foreground transition-colors duration-300">
-					<ThemeProvider>
-						<TopNav />
-						{children}
-					</ThemeProvider>
+					<BusinessProvider>
+						<ThemeProvider>
+							<TopNav />
+							{children}
+						</ThemeProvider>
+					</BusinessProvider>
 				</body>
 			</html>
 		</ClerkProvider>

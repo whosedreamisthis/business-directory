@@ -14,9 +14,13 @@ import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { User } from 'lucide-react';
 import { Button } from '../ui/button';
-export default function TopNav() {
+import { currentUser } from '@clerk/nextjs/server';
+import { LayoutDashboard, Plus, LogIn } from 'lucide-react';
+
+export default async function TopNav() {
+	const user = await currentUser();
+
 	return (
 		<Menubar className="m-2 border-none">
 			<div className="flex-none">
@@ -35,18 +39,47 @@ export default function TopNav() {
 			</div>
 			<div className=" flex flex-grow items-center justify-end gap-2">
 				<MenubarMenu>
-					<MenubarTrigger className="text-base font-normal">
-						Dashboard
+					<MenubarTrigger
+						asChild
+						className="text-base font-normal cursor-pointer"
+					>
+						<Link href="/business/add">
+							<span className="flex items-center">
+								<Plus size={16} className="mr-2" />
+								<span>Add Business</span>
+							</span>
+						</Link>
 					</MenubarTrigger>
-					<MenubarContent>
-						<MenubarItem>Task 1</MenubarItem>
-						<MenubarItem>Task 2</MenubarItem>
-					</MenubarContent>
 				</MenubarMenu>
+				{user && (
+					<MenubarMenu>
+						<MenubarTrigger
+							asChild
+							className="text-base font-normal cursor-pointer"
+						>
+							<Link href="/dashboard">
+								<span className="flex items-center">
+									<LayoutDashboard
+										size={16}
+										className="mr-2"
+									/>
+									<span>Dashboard</span>
+								</span>
+							</Link>
+						</MenubarTrigger>
+					</MenubarMenu>
+				)}
+
 				<Show when="signed-out">
 					<SignInButton mode="modal">
-						<Button className="cursor-pointer text-sm font-medium hover:text-slate-500 transition-colors">
-							Sign In
+						<Button
+							variant="ghost"
+							className="cursor-pointer text-sm font-medium  transition-colors"
+						>
+							<span className="flex items-center">
+								<LogIn size={16} className="mr-2" />
+								<span>Sign In</span>
+							</span>
 						</Button>
 					</SignInButton>
 				</Show>
