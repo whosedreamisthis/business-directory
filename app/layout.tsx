@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import ThemeProvider from '../components/theme/ThemeProvider';
+import ThemeProvider from '../components/nav/theme/ThemeProvider';
+import TopNav from '../components/nav/TopNav';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -35,7 +36,10 @@ export default function RootLayout({
 				/>
 			</head>
 			<body className="bg-background text-foreground transition-colors duration-300">
-				<ThemeProvider>{children}</ThemeProvider>
+				<ThemeProvider>
+					<TopNav />
+					{children}
+				</ThemeProvider>
 			</body>
 		</html>
 	);
