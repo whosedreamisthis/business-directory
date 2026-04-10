@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ThemeProvider from '../components/nav/theme/ThemeProvider';
 import TopNav from '../components/nav/TopNav';
+import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -15,11 +16,12 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang="en" suppressHydrationWarning>
-			<head>
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `
+		<ClerkProvider>
+			<html lang="en" suppressHydrationWarning>
+				<head>
+					<script
+						dangerouslySetInnerHTML={{
+							__html: `
               (function() {
                 try {
                   var theme = localStorage.getItem('theme');
@@ -32,15 +34,16 @@ export default function RootLayout({
                 } catch (e) {}
               })();
             `,
-					}}
-				/>
-			</head>
-			<body className="bg-background text-foreground transition-colors duration-300">
-				<ThemeProvider>
-					<TopNav />
-					{children}
-				</ThemeProvider>
-			</body>
-		</html>
+						}}
+					/>
+				</head>
+				<body className="bg-background text-foreground transition-colors duration-300">
+					<ThemeProvider>
+						<TopNav />
+						{children}
+					</ThemeProvider>
+				</body>
+			</html>
+		</ClerkProvider>
 	);
 }
