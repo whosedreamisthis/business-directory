@@ -10,12 +10,23 @@ import {
 	MenubarShortcut,
 	MenubarTrigger,
 } from '@/components/ui/menubar';
-
+import Link from 'next/link';
+import Image from 'next/image';
 export default function TopNav() {
 	return (
-		<Menubar>
+		<Menubar className="m-2 border-none">
 			<div className="flex-none">
-				<MenubarMenu>Logo</MenubarMenu>
+				<MenubarMenu>
+					<Link href="/">
+						<Image
+							src="/logo.svg"
+							alt="logo"
+							width={50}
+							height={50}
+							className="cursor-pointer"
+						/>
+					</Link>
+				</MenubarMenu>
 			</div>
 			<div className=" flex flex-grow items-center justify-end gap-2">
 				<MenubarMenu>
