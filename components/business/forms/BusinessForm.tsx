@@ -101,9 +101,9 @@ export default function BusinessForm() {
 									value={
 										isFile
 											? ''
-											: business[
+											: (business[
 													item.name as keyof BusinessState
-											  ] || ''
+											  ] as string | number) || ''
 									}
 								/>
 							</div>

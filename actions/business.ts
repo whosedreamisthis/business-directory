@@ -10,26 +10,36 @@ import slugify from 'slugify';
 export const saveBusinessToDb = async (data: BusinessState) => {
 	try {
 		await db();
-		console.log('await db ok');
 		const user = await currentUser();
 		const userEmail = user?.emailAddresses[0].emailAddress;
 
-		const { _id, ...rest } = data;
-		// Add the parentheses () to call the function!
-		const slug = slugify(
-			`${rest.category}-${rest.name}-${rest.address}-${nanoid()}`,
-			{ lower: true, strict: true },
-		);
+		// 1. Separate _id from the rest of the data
+		const { _id, slug: existingSlug, ...rest } = data;
 
-		const business = await Business.findOneAndUpdate(
-			{ slug: slug }, // The filter: find by slug
-			{ ...rest, userEmail }, // The data to update
-			{
-				new: true, // Return the updated document instead of the old one
-				upsert: true, // Create it if it doesn't exist
-				runValidators: true, // Ensure the edit follows your Schema rules
-			},
-		);
+		let query;
+		const updateData: any = { ...rest, userEmail };
+
+		if (_id) {
+			// EDITING MODE: Find by the unique database ID
+			query = { _id };
+			// We don't want to change the slug during an edit usually,
+			// but we keep the old one if it's already there.
+		} else {
+			// CREATION MODE: Generate the unique slug
+			const newSlug = slugify(
+				`${rest.category}-${rest.name}-${rest.address}-${nanoid(6)}`,
+				{ lower: true, strict: true },
+			);
+			query = { slug: newSlug };
+			updateData.slug = newSlug; // Add the slug to the data being saved
+		}
+
+		const business = await Business.findOneAndUpdate(query, updateData, {
+			new: true,
+			upsert: true,
+			runValidators: true,
+		});
+
 		return JSON.parse(JSON.stringify(business));
 	} catch (err) {
 		const errorMessage = err instanceof Error ? err.message : String(err);
