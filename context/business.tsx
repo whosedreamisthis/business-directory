@@ -9,9 +9,13 @@ import React, {
 } from 'react';
 import { BusinessState } from '@/utils/types/business';
 import { useClerk, useUser } from '@clerk/nextjs';
-import { saveBusinessToDb } from '@/actions/business';
+import {
+	saveBusinessToDb,
+	getUserBusinessesFromDb,
+	getBusinessFromDb,
+} from '@/actions/business';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 const intialState: BusinessState = {
 	_id: '',
@@ -39,6 +43,8 @@ interface BusinessContextType {
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 	handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	handleSubmit: (e: React.MouseEvent) => void;
+	businesses: BusinessState[];
+	setBusinesses: React.Dispatch<React.SetStateAction<BusinessState[]>>;
 }
 const BusinessContext = createContext<BusinessContextType | undefined>(
 	undefined,
@@ -51,11 +57,15 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
 	const [business, setBusiness] = useState<BusinessState>(intialState);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [businesses, setBusinesses] = useState<BusinessState[]>([]);
 
 	const { openSignIn } = useClerk();
 	const { isSignedIn } = useUser();
 
 	const router = useRouter();
+	const pathname = usePathname();
+
+	const isDashboardPage = pathname === '/dashboard';
 
 	useEffect(() => {
 		const savedBusiness = localStorage.getItem('business');
@@ -63,6 +73,12 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 			setBusiness(JSON.parse(savedBusiness));
 		}
 	}, []);
+
+	useEffect(() => {
+		if (isDashboardPage) {
+			getUserBusinesses();
+		}
+	}, [isDashboardPage]);
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setBusiness((prevBusiness: BusinessState) => {
@@ -96,6 +112,20 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 		}
 	};
 
+	const getUserBusinesses = async () => {
+		setLoading(true);
+
+		try {
+			const businesses = await getUserBusinessesFromDb();
+			setBusinesses(businesses);
+		} catch (err) {
+			console.log(err);
+			toast.error('❌ Failed to fetch businesses');
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	return (
 		<BusinessContext.Provider
 			value={{
@@ -105,6 +135,8 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 				setLoading,
 				handleChange,
 				handleSubmit,
+				businesses,
+				setBusinesses,
 			}}
 		>
 			{children}

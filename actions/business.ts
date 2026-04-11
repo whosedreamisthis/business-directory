@@ -22,8 +22,32 @@ export const saveBusinessToDb = async (data: BusinessState) => {
 		);
 
 		const business = await Business.create({ ...rest, slug, userEmail });
-		console.log('Before', business);
-		console.log('after', JSON.parse(JSON.stringify(business)));
+
+		return JSON.parse(JSON.stringify(business));
+	} catch (err) {
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		throw new Error(errorMessage);
+	}
+};
+
+export const getUserBusinessesFromDb = async () => {
+	try {
+		await db();
+		const user = await currentUser();
+		const userEmail = user?.emailAddresses[0]?.emailAddress;
+		const businesses = await Business.find({ userEmail }).sort({
+			createAt: -1,
+		});
+		return JSON.parse(JSON.stringify(businesses));
+	} catch (err) {
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		throw new Error(errorMessage);
+	}
+};
+
+export const getBusinessFromDb = async (_id: string) => {
+	try {
+		const business = await Business.findById(_id);
 		return JSON.parse(JSON.stringify(business));
 	} catch (err) {
 		const errorMessage = err instanceof Error ? err.message : String(err);
