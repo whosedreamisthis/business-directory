@@ -85,6 +85,7 @@ export default function BusinessForm() {
 				</h1>
 				<form>
 					{inputFields.map((item, index) => {
+						const isFile = item.type === 'file';
 						return (
 							<div key={index} className="my-2 w-full">
 								<label htmlFor={item.name} className="text-xs">
@@ -96,10 +97,13 @@ export default function BusinessForm() {
 									type={item.type}
 									required={item.required}
 									onChange={handleChange}
+									accept={item.accept}
 									value={
-										(business[
-											item.name as keyof BusinessState
-										] || '') as string | number
+										isFile
+											? ''
+											: business[
+													item.name as keyof BusinessState
+											  ] || ''
 									}
 								/>
 							</div>

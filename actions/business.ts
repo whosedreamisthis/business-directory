@@ -21,8 +21,15 @@ export const saveBusinessToDb = async (data: BusinessState) => {
 			{ lower: true, strict: true },
 		);
 
-		const business = await Business.create({ ...rest, slug, userEmail });
-
+		const business = await Business.findOneAndUpdate(
+			{ slug: slug }, // The filter: find by slug
+			{ ...rest, userEmail }, // The data to update
+			{
+				new: true, // Return the updated document instead of the old one
+				upsert: true, // Create it if it doesn't exist
+				runValidators: true, // Ensure the edit follows your Schema rules
+			},
+		);
 		return JSON.parse(JSON.stringify(business));
 	} catch (err) {
 		const errorMessage = err instanceof Error ? err.message : String(err);

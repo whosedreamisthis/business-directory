@@ -16,6 +16,7 @@ import {
 } from '@/actions/business';
 import toast from 'react-hot-toast';
 import { useRouter, usePathname, useParams } from 'next/navigation';
+import { handleLogoAction } from '@/actions/cloudinary';
 
 const initialState: BusinessState = {
 	_id: '',
@@ -59,6 +60,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 	const [business, setBusiness] = useState<BusinessState>(initialState);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [businesses, setBusinesses] = useState<BusinessState[]>([]);
+	const [logoUloading, setLogoUploading] = useState<boolean>(false);
 
 	const { openSignIn } = useClerk();
 	const { isSignedIn } = useUser();
@@ -88,12 +90,62 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 		}
 	}, [id]);
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setBusiness((prevBusiness: BusinessState) => {
-			const updatedBusiness = { ...prevBusiness, [name]: value };
-			localStorage.setItem('business', JSON.stringify(updatedBusiness));
-			return updatedBusiness;
+	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value, files } = e.target;
+		if (name === 'logo' && files && files[0]) {
+			await handleLogo(files, name);
+		} else {
+			setBusiness((prevBusiness: BusinessState) => {
+				const updatedBusiness = { ...prevBusiness, [name]: value };
+				localStorage.setItem(
+					'business',
+					JSON.stringify(updatedBusiness),
+				);
+				return updatedBusiness;
+			});
+		}
+	};
+
+	const handleLogo = async (files: FileList, name: string) => {
+		const file = files[0];
+		setLogoUploading(true);
+
+		const reader = new FileReader();
+
+		return new Promise<void>((resolve, reject) => {
+			reader.onloadend = async () => {
+				const base64Image = reader.result as string;
+				try {
+					const imageUrl = await handleLogoAction(base64Image);
+
+					if (imageUrl) {
+						setBusiness((prevBusiness: BusinessState) => {
+							const updatedBusiness = {
+								...prevBusiness,
+								[name]: imageUrl,
+							};
+							localStorage.setItem(
+								'business',
+								JSON.stringify(updatedBusiness),
+							);
+							return updatedBusiness;
+						});
+						resolve();
+					} else {
+						toast.error('❌ Failed to upload image');
+					}
+				} catch (err) {
+					toast.error('❌ Failed to upload image');
+				} finally {
+					setLogoUploading(false);
+				}
+			};
+			reader.onerror = (error) => {
+				toast.error('❌ Failed to upload image');
+				reject(error);
+			};
+
+			reader.readAsDataURL(file);
 		});
 	};
 
