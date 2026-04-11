@@ -35,7 +35,7 @@ export default function PreviewCard({ business }: { business: BusinessState }) {
 				</div>
 				<div className="flex-1 min-w-0">
 					<CardTitle className="text-lg line-clamp-1">
-						{business.name}
+						{business.name || 'Business Name'}
 					</CardTitle>
 					<p className="text-sm text-muted-foreground line-clamp-1 ">
 						{business?.category || 'Category'}

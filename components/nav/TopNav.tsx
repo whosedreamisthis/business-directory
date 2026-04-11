@@ -18,6 +18,7 @@ import { Button } from '../ui/button';
 import { currentUser } from '@clerk/nextjs/server';
 import { LayoutDashboard, Plus, LogIn } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
+import AddBusinessButton from '../buttons/AddBusinessButton';
 
 export default async function TopNav() {
 	const user = await currentUser();
@@ -39,19 +40,7 @@ export default async function TopNav() {
 				</MenubarMenu>
 			</div>
 			<div className=" flex flex-grow items-center justify-end gap-2">
-				<MenubarMenu>
-					<MenubarTrigger
-						asChild
-						className="text-base font-normal cursor-pointer"
-					>
-						<Link href="/business/add">
-							<span className="flex items-center">
-								<Plus size={16} className="mr-2" />
-								<span>Add Business</span>
-							</span>
-						</Link>
-					</MenubarTrigger>
-				</MenubarMenu>
+				<AddBusinessButton />
 				{user && (
 					<MenubarMenu>
 						<MenubarTrigger

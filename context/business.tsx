@@ -15,9 +15,9 @@ import {
 	getBusinessFromDb,
 } from '@/actions/business';
 import toast from 'react-hot-toast';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useParams } from 'next/navigation';
 
-const intialState: BusinessState = {
+const initialState: BusinessState = {
 	_id: '',
 	userEmail: '',
 	name: '',
@@ -45,6 +45,7 @@ interface BusinessContextType {
 	handleSubmit: (e: React.MouseEvent) => void;
 	businesses: BusinessState[];
 	setBusinesses: React.Dispatch<React.SetStateAction<BusinessState[]>>;
+	initialState: BusinessState;
 }
 const BusinessContext = createContext<BusinessContextType | undefined>(
 	undefined,
@@ -55,7 +56,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 }: {
 	children: ReactNode;
 }) => {
-	const [business, setBusiness] = useState<BusinessState>(intialState);
+	const [business, setBusiness] = useState<BusinessState>(initialState);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [businesses, setBusinesses] = useState<BusinessState[]>([]);
 
@@ -66,6 +67,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 	const pathname = usePathname();
 
 	const isDashboardPage = pathname === '/dashboard';
+	const { id } = useParams();
 
 	useEffect(() => {
 		const savedBusiness = localStorage.getItem('business');
@@ -79,6 +81,13 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 			getUserBusinesses();
 		}
 	}, [isDashboardPage]);
+
+	useEffect(() => {
+		if (id) {
+			getBusiness();
+		}
+	}, [id]);
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setBusiness((prevBusiness: BusinessState) => {
@@ -126,6 +135,16 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 		}
 	};
 
+	const getBusiness = async () => {
+		try {
+			const business = await getBusinessFromDb(id.toString());
+			setBusiness(business);
+		} catch (err) {
+			console.log(err);
+			toast.error('❌ Failed to fetch business');
+		}
+	};
+
 	return (
 		<BusinessContext.Provider
 			value={{
@@ -137,6 +156,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 				handleSubmit,
 				businesses,
 				setBusinesses,
+				initialState,
 			}}
 		>
 			{children}
