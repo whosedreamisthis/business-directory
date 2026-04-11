@@ -10,6 +10,7 @@ import React, {
 import { BusinessState } from '@/utils/types/business';
 import { useClerk, useUser } from '@clerk/nextjs';
 import { saveBusinessToDb } from '@/actions/business';
+import toast from 'react-hot-toast';
 
 const intialState: BusinessState = {
 	_id: '',
@@ -79,7 +80,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 				setLoading(true);
 				const savedBusiness = await saveBusinessToDb(business);
 				setBusiness(savedBusiness);
-				alert('Business saved Successfully');
+				toast.success('Business saved Successfully');
 			} catch (err) {
 				console.log(err);
 			} finally {

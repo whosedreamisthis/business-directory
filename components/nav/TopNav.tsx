@@ -17,6 +17,7 @@ import Image from 'next/image';
 import { Button } from '../ui/button';
 import { currentUser } from '@clerk/nextjs/server';
 import { LayoutDashboard, Plus, LogIn } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 
 export default async function TopNav() {
 	const user = await currentUser();
@@ -90,6 +91,7 @@ export default async function TopNav() {
 					<ThemeToggle />
 				</MenubarMenu>
 			</div>
+			<Toaster />
 		</Menubar>
 	);
 }
