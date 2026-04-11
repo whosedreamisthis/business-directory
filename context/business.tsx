@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { BusinessState } from '@/utils/types/business';
 import { useClerk, useUser } from '@clerk/nextjs';
+import { saveBusinessToDb } from '@/actions/business';
 
 const intialState: BusinessState = {
 	_id: '',
@@ -67,14 +68,23 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 		});
 	};
 
-	const handleSubmit = (e: React.MouseEvent) => {
+	const handleSubmit = async (e: React.MouseEvent) => {
 		e.preventDefault();
 
 		if (!isSignedIn) {
 			openSignIn();
 			return;
 		} else {
-			alert('Save business');
+			try {
+				setLoading(true);
+				const savedBusiness = await saveBusinessToDb(business);
+				setBusiness(savedBusiness);
+				alert('Business saved Successfully');
+			} catch (err) {
+				console.log(err);
+			} finally {
+				setLoading(false);
+			}
 		}
 	};
 
