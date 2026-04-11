@@ -18,6 +18,7 @@ const intialState: BusinessState = {
 	description: '',
 	address: '',
 	phone: '',
+	email: '',
 	website: '',
 	hours: '',
 	logo: '',

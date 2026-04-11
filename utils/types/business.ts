@@ -6,6 +6,7 @@ export interface BusinessState {
 	description: string;
 	address: string;
 	phone: string;
+	email: string;
 	website: string;
 	hours: string;
 	logo: string;

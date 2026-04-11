@@ -49,7 +49,7 @@ export default function PreviewCard({ business }: { business: BusinessState }) {
 				</p>
 				<InfoItem icon={MapPin} text={business?.address || 'Address'} />
 				<InfoItem icon={Phone} text={business?.phone || 'Phone'} />
-				<InfoItem icon={Mail} text={business?.userEmail || 'Email'} />
+				<InfoItem icon={Mail} text={business?.email || 'Email'} />
 				<InfoItem icon={Globe} text={business?.website || 'Website'} />
 				<InfoItem icon={Clock} text={business?.hours || 'Hours'} />
 				<div className="space-y-2"></div>
