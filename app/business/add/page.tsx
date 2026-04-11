@@ -4,6 +4,8 @@ import { useBusiness } from '@/context/business';
 import { BusinessState } from '@/utils/types/business';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import PreviewCard from '@/components/business/preview/PreviewCard';
+
 interface InputField {
 	name: string;
 	type: string;
@@ -49,7 +51,7 @@ const inputFields: InputField[] = [
 		type: 'url',
 	},
 	{
-		name: 'Hours',
+		name: 'hours',
 		label: 'Opening Hours (e.g. Mon-Fri 9am-5pm)',
 		type: 'text',
 		required: true,
@@ -66,13 +68,14 @@ const inputFields: InputField[] = [
 		accept: 'image/*',
 	},
 ];
+
 export default function AddBusinessPage() {
 	const { business, handleChange, handleSubmit } = useBusiness();
 
 	return (
 		<div className="flex flex-col lg:flex-row h-screen">
-			<div className="flex flex-col lg:w-1/2 p-4 lg:order-last lg:flex lg:justify-center lg:items-center overflow-y-auto">
-				Preview
+			<div className="flex flex-col lg:w-1/2 p-4 lg:order-last lg:flex lg:justify-center lg:items-center overflow-y-auto min-h-88.5">
+				<PreviewCard business={business} />
 			</div>
 			<div className="flex flex-col lg:w-1/2 p-4 lg:order-first lg:flex  overflow-y-auto">
 				<h1>
