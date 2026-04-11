@@ -11,6 +11,7 @@ import { BusinessState } from '@/utils/types/business';
 import { useClerk, useUser } from '@clerk/nextjs';
 import { saveBusinessToDb } from '@/actions/business';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 const intialState: BusinessState = {
 	_id: '',
@@ -54,6 +55,8 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 	const { openSignIn } = useClerk();
 	const { isSignedIn } = useUser();
 
+	const router = useRouter();
+
 	useEffect(() => {
 		const savedBusiness = localStorage.getItem('business');
 		if (savedBusiness) {
@@ -80,9 +83,13 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 				setLoading(true);
 				const savedBusiness = await saveBusinessToDb(business);
 				setBusiness(savedBusiness);
-				toast.success('Business saved Successfully');
+				localStorage.removeItem('business');
+
+				toast.success('🎉 Business saved Successfully');
+				router.push(`/dashboard/business/edit/${savedBusiness._id}`);
 			} catch (err) {
 				console.log(err);
+				toast.error('❌ Failed to save business');
 			} finally {
 				setLoading(false);
 			}
