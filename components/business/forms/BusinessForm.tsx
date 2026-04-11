@@ -71,7 +71,13 @@ const inputFields: InputField[] = [
 ];
 
 export default function BusinessForm() {
-	const { business, handleChange, handleSubmit, loading } = useBusiness();
+	const {
+		business,
+		handleChange,
+		handleSubmit,
+		loading,
+		logoUploading,
+	} = useBusiness();
 
 	return (
 		<div className="flex flex-col lg:flex-row h-screen">
@@ -106,6 +112,14 @@ export default function BusinessForm() {
 											  ] as string | number) || ''
 									}
 								/>
+								{logoUploading && item.name === 'logo' && (
+									<div className="absolute inset-0 flex items-center justify-center bg-white/50">
+										<Loader2Icon
+											className="animate-spin"
+											size={32}
+										/>
+									</div>
+								)}
 							</div>
 						);
 					})}
