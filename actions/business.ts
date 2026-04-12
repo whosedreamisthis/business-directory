@@ -71,3 +71,17 @@ export const getBusinessFromDb = async (_id: string) => {
 		throw new Error(errorMessage);
 	}
 };
+
+export const updateBusinessInDb = async (data: BusinessState) => {
+	try {
+		await db();
+		const { _id, ...rest } = data;
+		const business = await Business.findByIdAndUpdate(_id, rest, {
+			new: true,
+		});
+		return JSON.parse(JSON.stringify(business));
+	} catch (err) {
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		throw new Error(errorMessage);
+	}
+};

@@ -5,7 +5,7 @@ import { BusinessState } from '@/utils/types/business';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import PreviewCard from '@/components/business/preview/PreviewCard';
-import { Loader2Icon, Send } from 'lucide-react';
+import { Loader2Icon, Send, Brain } from 'lucide-react';
 
 interface InputField {
 	name: string;
@@ -77,6 +77,10 @@ export default function BusinessForm() {
 		handleSubmit,
 		loading,
 		logoUploading,
+		generateBusinessDescription,
+		generateDescriptionLoading,
+		updateBusiness,
+		isEditPage,
 	} = useBusiness();
 
 	return (
@@ -123,24 +127,46 @@ export default function BusinessForm() {
 							</div>
 						);
 					})}
-					<Button
-						onClick={handleSubmit}
-						type="submit"
-						className="my-5 w-full"
-						disabled={
-							!business.name ||
-							!business.category ||
-							!business.address ||
-							loading
-						}
-					>
-						{loading ? (
-							<Loader2Icon className="animate-spin mr-2" />
-						) : (
-							<Send className="mr-2" />
-						)}
-						Submit
-					</Button>
+					<div className="flex justify-between items-center">
+						<Button
+							variant="outline"
+							onClick={generateBusinessDescription}
+							className="my-5 border-2 border-slate-600 
+							dark:border-slate-300"
+							disabled={
+								!business.name ||
+								!business.category ||
+								!business.address ||
+								generateDescriptionLoading
+							}
+						>
+							{generateDescriptionLoading ? (
+								<Loader2Icon className="animate-spin mr-2" />
+							) : (
+								<Brain className="mr-2" />
+							)}
+							Generate Description with AI
+						</Button>
+						<Button
+							onClick={isEditPage ? updateBusiness : handleSubmit}
+							type="submit"
+							className="my-5"
+							disabled={
+								!business.name ||
+								!business.category ||
+								!business.address ||
+								loading ||
+								generateDescriptionLoading
+							}
+						>
+							{loading ? (
+								<Loader2Icon className="animate-spin mr-2" />
+							) : (
+								<Send className="mr-2" />
+							)}
+							Submit
+						</Button>
+					</div>
 				</form>
 			</div>
 		</div>
