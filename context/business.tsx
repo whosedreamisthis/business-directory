@@ -54,6 +54,9 @@ interface BusinessContextType {
 	generateDescriptionLoading: boolean;
 	updateBusiness: () => void;
 	isEditPage: boolean;
+	isDashboardPage: boolean;
+	openDescriptionModal: boolean;
+	setOpenDescriptionModal: (boolean) => void;
 }
 const BusinessContext = createContext<BusinessContextType | undefined>(
 	undefined,
@@ -72,6 +75,7 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 		generateDescriptionLoading,
 		setGenerateDescriptionLoading,
 	] = useState(false);
+	const [openDescriptionModal, setOpenDescriptionModal] = useState(false);
 
 	const { openSignIn } = useClerk();
 	const { isSignedIn } = useUser();
@@ -273,6 +277,9 @@ export const BusinessProvider: React.FC<{ children: ReactNode }> = ({
 				generateDescriptionLoading,
 				updateBusiness,
 				isEditPage,
+				isDashboardPage,
+				openDescriptionModal,
+				setOpenDescriptionModal,
 			}}
 		>
 			{children}

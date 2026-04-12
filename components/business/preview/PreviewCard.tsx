@@ -12,8 +12,15 @@ import {
 } from '@/components/ui/card';
 import { MapPin, Phone, Mail, Globe, Clock } from 'lucide-react';
 import Image from 'next/image';
+import { useBusiness } from '@/context/business';
+import DescriptionModal from '@/components/modals/DescriptionModal';
 
 export default function PreviewCard({ business }: { business: BusinessState }) {
+	const {
+		openDescriptionModal,
+		setOpenDescriptionModal,
+		isDashboardPage,
+	} = useBusiness();
 	return (
 		<Card className="w-full max-w-2xl mx-auto" style={{ height: '354px' }}>
 			<CardHeader className="flex flex-row items-center space-x-4 pb-2">
@@ -43,17 +50,32 @@ export default function PreviewCard({ business }: { business: BusinessState }) {
 				</div>
 			</CardHeader>
 			<CardContent>
-				<p className="text-sm mb-4 line-clamp-3">
+				<p
+					onClick={() => {
+						!isDashboardPage &&
+							setOpenDescriptionModal(!openDescriptionModal);
+					}}
+					className="text-sm mb-4 line-clamp-3"
+				>
 					{business?.description ||
 						'AI powered business description goes here...'}
 				</p>
-				<InfoItem icon={MapPin} text={business?.address || 'Address'} />
-				<InfoItem icon={Phone} text={business?.phone || 'Phone'} />
-				<InfoItem icon={Mail} text={business?.email || 'Email'} />
-				<InfoItem icon={Globe} text={business?.website || 'Website'} />
-				<InfoItem icon={Clock} text={business?.hours || 'Hours'} />
-				<div className="space-y-2"></div>
+
+				<div className="space-y-2">
+					<InfoItem
+						icon={MapPin}
+						text={business?.address || 'Address'}
+					/>
+					<InfoItem icon={Phone} text={business?.phone || 'Phone'} />
+					<InfoItem icon={Mail} text={business?.email || 'Email'} />
+					<InfoItem
+						icon={Globe}
+						text={business?.website || 'Website'}
+					/>
+					<InfoItem icon={Clock} text={business?.hours || 'Hours'} />
+				</div>
 			</CardContent>
+			<DescriptionModal />
 		</Card>
 	);
 }
